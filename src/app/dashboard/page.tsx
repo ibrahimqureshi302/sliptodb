@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { InboundEmailCard } from "@/components/dashboard/inbound-email-card";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { EmptyInvoices } from "@/components/dashboard/empty-invoices";
+import { OnboardingBanner } from "@/components/dashboard/onboarding-banner";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -72,6 +73,15 @@ export default function DashboardPage() {
           Here's what's happening with your SlipToDB account.
         </p>
       </div>
+
+      {!customer.onboarding_completed && (
+        <OnboardingBanner
+          customerId={customer.id}
+          initialStep={customer.onboarding_step ?? 0}
+          hasInvoices={invoiceCount > 0}
+          sheetConnected={customer.google_sheet_connected ?? false}
+        />
+      )}
 
       <InboundEmailCard inboundKey={customer.inbound_key} />
 
