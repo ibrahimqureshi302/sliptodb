@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { InboundEmailCard } from "@/components/dashboard/inbound-email-card";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { EmptyInvoices } from "@/components/dashboard/empty-invoices";
 import { OnboardingBanner } from "@/components/dashboard/onboarding-banner";
+import { GoogleSheetsCard } from "@/components/dashboard/google-sheets-card";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [customer, setCustomer] = useState<any>(null);
@@ -91,10 +92,23 @@ export default function DashboardPage() {
         monthlyQuota={customer.monthly_quota ?? 0}
       />
 
+      <GoogleSheetsCard
+        connected={customer.google_sheet_connected ?? false}
+        sheetId={customer.google_sheet_id ?? null}
+      />
+
       <div>
         <h2 className="mb-4 text-lg font-semibold">Recent invoices</h2>
         <EmptyInvoices />
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="text-sm text-muted-foreground">Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
