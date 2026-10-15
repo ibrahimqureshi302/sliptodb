@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,50 +23,60 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } },
-    });
-
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!authData.user) {
-      setError("Signup failed. Please try again.");
-      setLoading(false);
-      return;
-    }
-
-    const inboundKey = Math.random().toString(36).substring(2, 10);
-
-    const { error: customerError } = await supabase
-      .from("customers")
-      .insert({
-        id: authData.user.id,
-        email: email,
-        name: name || null,
-        inbound_key: inboundKey,
-        plan: "starter",
-        monthly_quota: 500,
-        credits_remaining: 500,
-        status: "active",
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
       });
 
-    if (customerError) {
-      console.error("Customer creation error:", customerError);
-      setError("Account created, but customer profile failed: " + customerError.message);
-      setLoading(false);
-      return;
-    }
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return;
+      }
 
-    router.push("/dashboard");
-    router.refresh();
+      if (!authData.user) {
+        setError("Signup failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const inboundKey = Math.random().toString(36).substring(2, 10);
+
+      const { error: customerError } = await supabase
+        .from("customers")
+        .insert({
+          id: authData.user.id,
+          email: email,
+          name: name || null,
+          inbound_key: inboundKey,
+          plan: "starter",
+          monthly_quota: 500,
+          credits_remaining: 500,
+          status: "active",
+        });
+
+      if (customerError) {
+        console.error("Customer creation error:", customerError);
+        setError("Account created, but customer profile failed: " + customerError.message);
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError(
+        err instanceof Error
+          ? `Network error: ${err.message}`
+          : "An unexpected error occurred."
+      );
+      setLoading(false);
+    }
   }
 
   return (
@@ -117,16 +128,32 @@ export default function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="At least 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                autoComplete="new-password"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="At least 8 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               <p className="text-xs text-muted-foreground">
                 Must be at least 8 characters.
               </p>
