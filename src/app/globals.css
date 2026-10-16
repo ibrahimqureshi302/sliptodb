@@ -127,3 +127,36 @@
     @apply font-sans;
   }
 }
+
+/* ============================================================
+   GLOBAL CURSOR STYLES
+   ============================================================
+   Make all interactive elements show a pointer (finger) cursor
+   on hover. This is the standard UX pattern for clickable items.
+*/
+
+button:not(:disabled),
+a,
+[role="button"]:not([aria-disabled="true"]),
+[role="menuitem"],
+[role="option"],
+[role="tab"],
+summary,
+label[for],
+input[type="checkbox"],
+input[type="radio"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+select,
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Disabled buttons and inputs should show the "not-allowed" cursor */
+button:disabled,
+[aria-disabled="true"],
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
