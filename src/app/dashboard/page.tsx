@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,6 +9,7 @@ import { InboundEmailCard } from "@/components/dashboard/inbound-email-card";
 import { GoogleSheetsCard } from "@/components/dashboard/google-sheets-card";
 import { OnboardingBanner } from "@/components/dashboard/onboarding-banner";
 import { InvoiceTable, type Invoice } from "@/components/dashboard/invoice-table";
+import { UploadZone } from "@/components/dashboard/upload-zone";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -71,18 +71,14 @@ export default function DashboardPage() {
 
   const userName = customer.name || "there";
   const invoiceCount = invoices.length;
-
-  // Compute totals
   const totalValue = invoices.reduce(
     (sum, inv) => sum + (Number(inv.total) || 0),
     0
   );
-  const monthlyQuota = customer.monthly_quota ?? 500;
-  const creditsRemaining = customer.credits_remaining ?? 0;
 
   return (
     <div className="space-y-8">
-      {/* Page header */}
+      {/* Welcome header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           Welcome back, {userName}
@@ -107,11 +103,7 @@ export default function DashboardPage() {
         <StatCard
           label="Invoices"
           value={invoiceCount.toString()}
-          hint={
-            invoiceCount === 0
-              ? "Forward your first invoice"
-              : "All time"
-          }
+          hint={invoiceCount === 0 ? "Add your first invoice" : "Recent only"}
         />
         <StatCard
           label="Total Value"
@@ -120,18 +112,20 @@ export default function DashboardPage() {
         />
         <StatCard
           label="Credits"
-          value={creditsRemaining.toString()}
+          value={(customer.credits_remaining ?? 0).toString()}
           hint="Remaining this period"
         />
         <StatCard
           label="Quota"
-          value={monthlyQuota.toString()}
+          value={(customer.monthly_quota ?? 500).toString()}
           hint="Monthly invoice limit"
         />
       </div>
 
-      {/* Inbound email */}
+      {/* Input channels */}
       <InboundEmailCard inboundKey={customer.inbound_key} />
+
+      <UploadZone />
 
       {/* Google Sheets */}
       <GoogleSheetsCard
