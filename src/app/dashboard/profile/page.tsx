@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle2 } from "lucide-react";
@@ -64,14 +63,25 @@ export default function ProfilePage() {
 
       if (!user) return;
 
-      const { error: updateError } = await supabase
+      // 1. Update the customers table
+      const { error: customerError } = await supabase
         .from("customers")
         .update({ name, company })
         .eq("id", user.id);
 
-      if (updateError) {
-        setError(updateError.message);
+      if (customerError) {
+        setError(customerError.message);
         return;
+      }
+
+      // 2. Also update the auth user_metadata so the navbar picks it up
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { name },
+      });
+
+      if (authError) {
+        console.error("Auth metadata update failed:", authError);
+        // Not fatal — the customer table was updated. Show a soft warning.
       }
 
       setSaved(true);

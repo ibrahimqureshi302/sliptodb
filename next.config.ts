@@ -1,17 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
+  // Default configuration
+  // Note: Do NOT enable experimental.cacheComponents — it conflicts
+  // with Tailwind v4 + shadcn/ui in our setup.
 };
 
 export default nextConfig;
