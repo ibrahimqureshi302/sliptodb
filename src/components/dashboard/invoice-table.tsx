@@ -59,7 +59,7 @@ export function InvoiceTable({ invoices, pageSize = 10 }: InvoiceTableProps) {
         </div>
         <h3 className="mb-2 text-base font-semibold">No invoices yet</h3>
         <p className="mx-auto max-w-sm text-sm text-muted-foreground">
-          Forward your first invoice email to your inbound address. It will
+          Forward your first invoice email or upload a PDF to your inbound address. It will
           appear here within seconds.
         </p>
       </div>
@@ -83,11 +83,17 @@ export function InvoiceTable({ invoices, pageSize = 10 }: InvoiceTableProps) {
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                 Vendor
               </th>
-              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell">
+              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell">
                 Invoice #
               </th>
               <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell">
                 Due Date
+              </th>
+              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground xl:table-cell">
+                Filename
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                Currency
               </th>
               <th className="px-4 py-3 text-right font-medium text-muted-foreground">
                 Total
@@ -106,11 +112,17 @@ export function InvoiceTable({ invoices, pageSize = 10 }: InvoiceTableProps) {
                 <td className="max-w-[200px] truncate px-4 py-3 font-medium">
                   {invoice.vendor_name || "Unknown vendor"}
                 </td>
-                <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
+                <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                   {invoice.invoice_number || "—"}
                 </td>
                 <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                   {formatDate(invoice.due_date)}
+                </td>
+                <td className="hidden max-w-[150px] truncate px-4 py-3 text-muted-foreground xl:table-cell">
+                  {invoice.source_filename || "—"}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {invoice.currency || "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right font-medium">
                   {formatCurrency(invoice.total, invoice.currency)}
