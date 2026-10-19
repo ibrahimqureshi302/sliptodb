@@ -35,6 +35,22 @@ function formatDate(dateStr: string | null): string {
   }
 }
 
+function formatDateTime(dateStr: string | null): string {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 function formatCurrency(amount: number | null, currency: string | null): string {
   if (amount == null) return "—";
   const curr = currency || "USD";
@@ -78,19 +94,19 @@ export function InvoiceTable({ invoices, pageSize = 10 }: InvoiceTableProps) {
           <thead className="border-b border-border/50 bg-muted/30">
             <tr>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Date
+                Processed At
               </th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                 Vendor
               </th>
-              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell">
+              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell">
                 Invoice #
               </th>
-              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell">
-                Due Date
+              <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell">
+                Invoice Date
               </th>
               <th className="hidden px-4 py-3 text-left font-medium text-muted-foreground xl:table-cell">
-                Filename
+                Due Date
               </th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                 Currency
@@ -106,20 +122,21 @@ export function InvoiceTable({ invoices, pageSize = 10 }: InvoiceTableProps) {
                 key={invoice.id}
                 className="border-b border-border/40 last:border-0 hover:bg-accent/30"
               >
-                <td className="whitespace-nowrap px-4 py-3">
-                  {formatDate(invoice.invoice_date || invoice.created_at)}
+                {/* NEW: Real-time Processed At column */}
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                  {formatDateTime(invoice.created_at)}
                 </td>
                 <td className="max-w-[200px] truncate px-4 py-3 font-medium">
                   {invoice.vendor_name || "Unknown vendor"}
                 </td>
-                <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
+                <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                   {invoice.invoice_number || "—"}
                 </td>
-                <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
-                  {formatDate(invoice.due_date)}
+                <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
+                  {formatDate(invoice.invoice_date)}
                 </td>
-                <td className="hidden max-w-[150px] truncate px-4 py-3 text-muted-foreground xl:table-cell">
-                  {invoice.source_filename || "—"}
+                <td className="hidden px-4 py-3 text-muted-foreground xl:table-cell">
+                  {formatDate(invoice.due_date)}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {invoice.currency || "—"}
