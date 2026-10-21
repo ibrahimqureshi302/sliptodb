@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Mail } from "lucide-react";
+import Link from "next/link";
+import { Copy, Check, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface InboundEmailCardProps {
@@ -60,6 +61,20 @@ export function InboundEmailCard({ inboundKey }: InboundEmailCardProps) {
             </>
           )}
         </Button>
+      </div>
+
+      {/* Auto-forwarding link */}
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          💡 Tired of forwarding manually?
+        </p>
+        <Link
+          href="/dashboard/setup-forwarding"
+          className="inline-flex items-center gap-1 text-xs font-medium text-violet-500 hover:underline"
+        >
+          Set up auto-forwarding
+          <ArrowRight className="h-3 w-3" />
+        </Link>
       </div>
     </div>
   );
